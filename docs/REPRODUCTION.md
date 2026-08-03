@@ -5,8 +5,9 @@
 The selector and evaluation utilities require Python 3.10 or newer.
 
 ```bash
-conda env create -f environment.yml
+conda create -n deck python=3.11 -y
 conda activate deck
+pip install -e ".[models,dev]"
 ```
 
 The core tests do not require a GPU. Captioning, local embeddings, and Qwen3-VL answering follow

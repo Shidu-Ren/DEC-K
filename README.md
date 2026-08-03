@@ -177,5 +177,4 @@ pytest
 DEC-K is evaluated with [M3-Agent](https://github.com/ByteDance-Seed/m3-agent) and
 [SiLVR](https://github.com/CeeZh/SILVR). Baselines use
 [Adaptive-k Retrieval](https://github.com/megagonlabs/adaptive-k-retrieval) and
-[Adaptive-RAG](https://github.com/starsuzi/Adaptive-RAG). Third-party licenses are listed in
-[`THIRD_PARTY.md`](THIRD_PARTY.md).
+[Adaptive-RAG](https://github.com/starsuzi/Adaptive-RAG).

@@ -59,7 +59,7 @@ class SentenceTransformerEmbeddingClient:
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:
             raise RuntimeError(
-                "Install model dependencies with `pip install -r requirements-models.txt`"
+                'Install model dependencies with `pip install -e ".[models]"`'
             ) from exc
         self.model = SentenceTransformer(
             model,
