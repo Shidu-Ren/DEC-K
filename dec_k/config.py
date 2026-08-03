@@ -38,12 +38,6 @@ class ExperimentConfig:
     start_k: int = 2
     lambda_: float = 0.85
     temporal_output: bool = True
-    fixed_k: int | None = None
-    adaptive_extra: int = 0
-    adaptive_budgets: dict[str, int] = field(
-        default_factory=lambda: {"A": 2, "B": 7, "C": 8}
-    )
-    adaptive_label_field: str = "adaptive_rag_label"
     structured_memory: StructuredMemoryConfig = field(
         default_factory=StructuredMemoryConfig
     )
@@ -69,16 +63,8 @@ class ExperimentConfig:
         return cls.from_mapping(payload)
 
     def validate(self) -> None:
-        allowed = {
-            "deck",
-            "fixed",
-            "mmr_fixed",
-            "adaptive_k",
-            "adaptive_rag",
-            "relevance_deck",
-        }
-        if self.method not in allowed:
-            raise ValueError(f"Unknown method {self.method!r}; expected one of {sorted(allowed)}")
+        if self.method != "deck":
+            raise ValueError("Only method='deck' is supported")
         if self.candidate_pool <= 0:
             raise ValueError("candidate_pool must be positive")
         if self.min_k <= 0 or self.max_k < self.min_k:
@@ -87,9 +73,6 @@ class ExperimentConfig:
             raise ValueError("start_k must be between 1 and max_k")
         if not 0.0 <= self.lambda_ <= 1.0:
             raise ValueError("lambda must be in [0, 1]")
-        if self.method in {"fixed", "mmr_fixed"} and self.fixed_k is None:
-            raise ValueError(f"fixed_k is required for method={self.method}")
-
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["lambda"] = data.pop("lambda_")

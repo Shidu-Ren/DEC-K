@@ -65,7 +65,7 @@ pip install -e ".[models]"
 Prepare caption and transcript memory:
 
 ```bash
-python pipelines/prepare_caption_memory.py \
+python prepare_caption_memory.py \
   --memory data/caption_asr.jsonl \
   --questions data/questions.jsonl \
   --output data/qa_documents.jsonl
@@ -85,12 +85,12 @@ Select evidence:
 
 ```bash
 deck select \
-  --config configs/silvr/deck.yaml \
+  --config config/silvr.yaml \
   --input data/qa_candidates.jsonl \
   --output outputs/deck-selected.jsonl
 ```
 
-Use `configs/m3_agent/deck.yaml` when running the M3-Agent integration.
+Use `config/m3_agent.yaml` when running the M3-Agent integration.
 
 Generate answers through an OpenAI-compatible local endpoint:
 

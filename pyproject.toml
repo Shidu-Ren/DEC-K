@@ -29,11 +29,12 @@ models = [
 ]
 
 [project.scripts]
-deck = "deck.cli:main"
+deck = "dec_k.cli:main"
 
 [project.urls]
 Repository = "https://github.com/Shidu-Ren/DEC-K"
 Issues = "https://github.com/Shidu-Ren/DEC-K/issues"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = ["dec_k*"]

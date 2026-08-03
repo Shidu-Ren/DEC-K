@@ -1,9 +1,0 @@
-name: m3_agent_adaptive_k_plus2
-method: adaptive_k
-candidate_pool: 6
-min_k: 2
-max_k: 5
-start_k: 1
-lambda: 0.85
-adaptive_extra: 2
-temporal_output: true
