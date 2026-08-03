@@ -1,0 +1,10 @@
+name: m3_agent_adaptive_rag_a2_b4_c5
+method: adaptive_rag
+candidate_pool: 200
+min_k: 2
+max_k: 5
+start_k: 1
+lambda: 0.85
+adaptive_budgets: {A: 2, B: 4, C: 5}
+adaptive_label_field: adaptive_rag_label
+temporal_output: true

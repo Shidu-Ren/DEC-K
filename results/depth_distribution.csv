@@ -1,0 +1,31 @@
+framework,benchmark,method,k,count,total,percent
+SiLVR,M3Bench Robot,DEC-K,2,21,1276,1.646
+SiLVR,M3Bench Robot,DEC-K,3,6,1276,0.470
+SiLVR,M3Bench Robot,DEC-K,4,29,1276,2.273
+SiLVR,M3Bench Robot,DEC-K,5,79,1276,6.191
+SiLVR,M3Bench Robot,DEC-K,6,159,1276,12.461
+SiLVR,M3Bench Robot,DEC-K,7,372,1276,29.154
+SiLVR,M3Bench Robot,DEC-K,8,610,1276,47.806
+SiLVR,M3Bench Web,DEC-K,2,99,3171,3.122
+SiLVR,M3Bench Web,DEC-K,3,21,3171,0.662
+SiLVR,M3Bench Web,DEC-K,4,66,3171,2.081
+SiLVR,M3Bench Web,DEC-K,5,182,3171,5.739
+SiLVR,M3Bench Web,DEC-K,6,430,3171,13.560
+SiLVR,M3Bench Web,DEC-K,7,887,3171,27.973
+SiLVR,M3Bench Web,DEC-K,8,1486,3171,46.862
+SiLVR,VideoMME-Long,DEC-K,2,4,900,0.444
+SiLVR,VideoMME-Long,DEC-K,3,0,900,0.000
+SiLVR,VideoMME-Long,DEC-K,4,10,900,1.111
+SiLVR,VideoMME-Long,DEC-K,5,52,900,5.778
+SiLVR,VideoMME-Long,DEC-K,6,138,900,15.333
+SiLVR,VideoMME-Long,DEC-K,7,241,900,26.778
+SiLVR,VideoMME-Long,DEC-K,8,455,900,50.556
+SiLVR,M3Bench Robot,Adaptive-k,6,633,1276,49.608
+SiLVR,M3Bench Robot,Adaptive-k,7,248,1276,19.436
+SiLVR,M3Bench Robot,Adaptive-k,8,395,1276,30.956
+SiLVR,M3Bench Web,Adaptive-k,6,1519,3171,47.903
+SiLVR,M3Bench Web,Adaptive-k,7,679,3171,21.413
+SiLVR,M3Bench Web,Adaptive-k,8,973,3171,30.684
+SiLVR,VideoMME-Long,Adaptive-k,6,423,900,47.000
+SiLVR,VideoMME-Long,Adaptive-k,7,171,900,19.000
+SiLVR,VideoMME-Long,Adaptive-k,8,306,900,34.000

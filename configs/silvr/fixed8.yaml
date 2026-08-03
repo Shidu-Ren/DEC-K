@@ -1,0 +1,9 @@
+name: silvr_fixed8
+method: fixed
+candidate_pool: 200
+min_k: 2
+max_k: 8
+start_k: 2
+lambda: 0.85
+fixed_k: 8
+temporal_output: true

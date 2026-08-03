@@ -1,0 +1,19 @@
+name: m3_agent_deck
+method: deck
+candidate_pool: 200
+min_k: 2
+max_k: 5
+start_k: 1
+lambda: 0.85
+temporal_output: true
+structured_memory:
+  enabled: true
+  top_nodes: 8
+  max_leaders: 4
+  type_window: 3
+  cluster_threshold: 0.85
+  eta: 0.001
+  leader_weights: [1.0, 0.35, 0.15, 0.05]
+  type_bonus: 0.05
+  coverage_weight: 0.03
+  coverage_cap: 3

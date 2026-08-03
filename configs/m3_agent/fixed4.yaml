@@ -1,0 +1,9 @@
+name: m3_agent_fixed4
+method: fixed
+candidate_pool: 200
+min_k: 2
+max_k: 5
+start_k: 1
+lambda: 0.85
+fixed_k: 4
+temporal_output: true
