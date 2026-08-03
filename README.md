@@ -19,6 +19,8 @@
 DEC-K is a training-free retrieval layer for multimodal agents with long-term memory. It can be
 integrated with existing agent systems without changing memory construction or answer generation.
 
+![DEC-K method](assets/method.png)
+
 ## Results
 
 Accuracy and the mean number of clips per ordinary retrieval call are reported below.
