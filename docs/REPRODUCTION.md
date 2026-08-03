@@ -12,6 +12,27 @@ conda activate deck
 The core tests do not require a GPU. Captioning, local embeddings, and Qwen3-VL answering follow
 the hardware requirements of their model servers.
 
+## Configuration reference
+
+Every selector run is controlled by one YAML file.
+
+| Field | Meaning |
+|---|---|
+| `method` | `deck`, `fixed`, `mmr_fixed`, `relevance_deck`, `adaptive_k`, or `adaptive_rag` |
+| `candidate_pool` | Number of relevance-ranked candidates exposed to the selector |
+| `min_k`, `max_k` | Minimum and maximum returned evidence depth |
+| `start_k` | First adjacent boundary considered by DEC-K |
+| `lambda` | Relevance weight in sequential MMR |
+| `temporal_output` | Restore selected clips to temporal order before answering |
+| `fixed_k` | Requested depth for fixed relevance/MMR baselines |
+| `adaptive_extra` | Fixed post-cutoff buffer used by Adaptive-k |
+| `adaptive_budgets` | Mapping from Adaptive-RAG classes A/B/C to clip counts |
+| `structured_memory` | M3-Agent clip-level node aggregation parameters |
+
+DEC-K observes at most `max_k + 1` MMR marginals. The additional item is used only to evaluate
+the boundary after `max_k`; it is not returned. Configurations are fixed across all three
+benchmarks within each framework, with no benchmark-specific tuning.
+
 ## Shared memory and model settings
 
 - non-overlapping 30-second clips;
@@ -61,9 +82,6 @@ budget within each framework and are then held fixed across Robot, Web, and Vide
 - Lambda sensitivity: `0.70, 0.73, 0.76, 0.79, 0.82, 0.85, 0.88, 0.91` on SiLVR +
   VideoMME-Long.
 - Returned-depth analysis: DEC-K and Adaptive-k on the three SiLVR benchmarks.
-
-Expected aggregate outputs are versioned in `results/`. A reproduction is complete only when the
-question count and realized average clip count also match; accuracy alone is insufficient.
 
 ## Generic run matrix
 
