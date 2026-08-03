@@ -27,12 +27,6 @@ models = [
   "torch>=2.2",
   "transformers>=4.51",
 ]
-dev = [
-  "build>=1.2",
-  "pytest>=8.0",
-  "pytest-cov>=5.0",
-  "ruff>=0.6",
-]
 
 [project.scripts]
 deck = "deck.cli:main"
@@ -43,14 +37,3 @@ Issues = "https://github.com/Shidu-Ren/DEC-K/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.pytest.ini_options]
-addopts = "-q"
-testpaths = ["tests"]
-
-[tool.ruff]
-line-length = 100
-target-version = "py310"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]

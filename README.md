@@ -3,7 +3,6 @@
 <p align="center"><b>Diverse Evidence with Calibrated K for Long-Term Memory Multimodal Agents</b></p>
 
 <p align="center">
-  <a href="https://github.com/Shidu-Ren/DEC-K/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/Shidu-Ren/DEC-K/actions/workflows/tests.yml/badge.svg"></a>
   <a href="https://www.python.org/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB.svg"></a>
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-3DA639.svg"></a>
 </p>
