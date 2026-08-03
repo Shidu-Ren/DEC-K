@@ -124,14 +124,6 @@ deck evaluate \
   --metrics outputs/metrics.json
 ```
 
-## Tests
-
-```bash
-pip install -e ".[dev]"
-ruff check src tests pipelines
-pytest
-```
-
 ## Citation
 
 ```bibtex
