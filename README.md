@@ -61,20 +61,7 @@ For local Qwen embeddings:
 pip install -e ".[models]"
 ```
 
-## Quick Start
-
-Run DEC-K on the prepared example:
-
-```bash
-deck select \
-  --config configs/silvr/deck.yaml \
-  --input examples/prepared_candidates.jsonl \
-  --output outputs/demo-selected.jsonl
-```
-
-The output contains the selected clips, selected depth, MMR trace, and boundary scores.
-
-## End-to-End Run
+## Running DEC-K
 
 Prepare caption and transcript memory:
 
@@ -103,6 +90,8 @@ deck select \
   --input data/qa_candidates.jsonl \
   --output outputs/deck-selected.jsonl
 ```
+
+Use `configs/m3_agent/deck.yaml` when running the M3-Agent integration.
 
 Generate answers through an OpenAI-compatible local endpoint:
 
@@ -133,23 +122,6 @@ deck evaluate \
   --input outputs/deck-predictions.jsonl \
   --output outputs/deck-judged.jsonl \
   --metrics outputs/metrics.json
-```
-
-## Reproducing the Paper
-
-The exact M3-Agent and SiLVR settings are provided in [`configs/`](configs/). Dataset preparation,
-the complete experiment matrix, and framework integration are documented in:
-
-- [`docs/DATA.md`](docs/DATA.md)
-- [`docs/REPRODUCTION.md`](docs/REPRODUCTION.md)
-- [`docs/INTEGRATION.md`](docs/INTEGRATION.md)
-
-Run a prepared experiment matrix with:
-
-```bash
-python pipelines/run_paper_matrix.py \
-  --manifest configs/my_matrix.yaml \
-  --output-dir outputs/paper
 ```
 
 ## Tests
