@@ -16,8 +16,11 @@
 
 ![DEC-K overview](assets/teaser.png)
 
-DEC-K is a training-free retrieval layer for multimodal agents with long-term memory. It can be
-integrated with existing agent systems without changing memory construction or answer generation.
+DEC-K is a training-free retrieval layer that selects complementary evidence and a query-specific
+retrieval depth. This repository includes the complete paper implementations for both
+[M3-Agent](https://github.com/ByteDance-Seed/m3-agent) and
+[SiLVR](https://github.com/CeeZh/SILVR), together with their data loaders, inference paths,
+evaluators, paper baselines, and one entry point for reproducing the experiments.
 
 ![DEC-K method](assets/method.png)
 
@@ -46,6 +49,24 @@ Accuracy and the mean number of clips per ordinary retrieval call are reported b
 | Adaptive-RAG | 41.0 | 56.3 | 57.2 | 51.5 | 7.1 |
 | **DEC-K** | **42.1** | 56.9 | **58.6** | **52.5** | **7.1** |
 
+## Repository
+
+```text
+DEC-K/
+├── dec_k/                    # Standalone DEC-K selector
+├── frameworks/
+│   ├── m3_agent/             # Full memorization, memory graph, control, and evaluation code
+│   └── silvr/                # Full data, inference, retrieval, and evaluation code
+├── config/                   # Standalone selector configurations
+├── assets/                   # Paper figures
+├── prepare_caption_memory.py
+└── reproduce.py              # Unified paper experiment entry point
+```
+
+The framework directories are source snapshots, not git submodules. A normal clone contains the
+code required to run either integration. Models, videos, generated captions, and memory graphs are
+kept outside git because of their size.
+
 ## Installation
 
 ```bash
@@ -53,77 +74,123 @@ git clone https://github.com/Shidu-Ren/DEC-K.git
 cd DEC-K
 conda create -n deck python=3.11 -y
 conda activate deck
-pip install -e .
 ```
 
-For local Qwen embeddings:
+Install the framework you want to reproduce:
 
 ```bash
-pip install -e ".[models]"
+bash setup.sh silvr
+# or
+bash setup.sh m3-agent
 ```
 
-## Running DEC-K
+M3-Agent follows its original CUDA environment and uses vLLM for the control model. SiLVR uses
+Qwen3-VL-8B for answering and Qwen3-Embedding-4B for dense retrieval. See the upstream setup notes
+preserved in `frameworks/m3_agent/README.upstream.md` and `frameworks/silvr/README.md` when building
+the complete memorization stack from raw videos.
 
-Prepare caption and transcript memory:
+## Data and Models
+
+### M3-Agent
+
+1. Download [M3-Agent-Control](https://huggingface.co/ByteDance-Seed/M3-Agent-Control) to
+   `frameworks/m3_agent/models/M3-Agent-Control`.
+2. Download the official Robot and Web [M3-Bench memory graphs](https://huggingface.co/datasets/ByteDance-Seed/M3-Bench/tree/main/memory_graphs)
+   to `frameworks/m3_agent/data/memory_graphs`.
+3. The Robot, Web, and VideoMME-Long question files are included in
+   `frameworks/m3_agent/data/annotations`.
+4. To build memory graphs from videos, including VideoMME-Long, also download
+   [M3-Agent-Memorization](https://huggingface.co/ByteDance-Seed/M3-Agent-Memorization) and follow
+   the bundled upstream memorization instructions.
+
+For open-ended M3Bench evaluation, export `OPENAI_API_KEY`. No API key is needed for
+VideoMME-Long multiple-choice evaluation.
+
+### SiLVR
+
+Prepare 30-second visual captions and heard-dialogue ASR blocks. VideoMME-Long accepts the standard
+Video-MME parquet annotation, a caption directory, and a subtitle directory. For Robot and Web,
+convert the per-clip caption records into SiLVR's annotation format:
 
 ```bash
-python prepare_caption_memory.py \
-  --memory data/caption_asr.jsonl \
-  --questions data/questions.jsonl \
-  --output data/qa_documents.jsonl
+python frameworks/silvr/scripts/prepare_m3bench_qwen3vl_for_silvr.py \
+  --dataset robot \
+  --annotation-path frameworks/m3_agent/data/annotations/robot.json \
+  --caption-root /path/to/robot_caption_records \
+  --output-path data/m3bench/robot_caption_asr.json \
+  --drop-missing-memory
 ```
 
-Encode queries and clip documents:
+Use `web` in place of `robot` for M3Bench-Web.
+
+## Reproduce DEC-K
+
+### M3-Agent
+
+The paper configuration uses clip-internal aggregation, a 200-clip MMR candidate set,
+`lambda=0.85`, and `min2/max5`. The sixth MMR score is retained only to evaluate the final
+candidate boundary.
 
 ```bash
-deck embed \
-  --backend local \
-  --model Qwen/Qwen3-Embedding-4B \
-  --input data/qa_documents.jsonl \
-  --output data/qa_candidates.jsonl
+python reproduce.py m3-agent \
+  --benchmark robot \
+  --method deck \
+  --tensor-parallel-size 1
 ```
 
-Select evidence:
+Change `robot` to `web` or `videomme_long` for the other benchmarks. On GPUs that require tensor
+parallelism, set `--tensor-parallel-size 2`. Results are written under
+`frameworks/m3_agent/data/results`.
+
+### SiLVR
+
+The paper configuration uses dense Qwen embeddings, a 200-clip retrieval set, MMR with
+`lambda=0.85`, and `min2/max8`. It observes nine MMR scores and returns at most eight clips.
 
 ```bash
-deck select \
-  --config config/silvr.yaml \
-  --input data/qa_candidates.jsonl \
-  --output outputs/deck-selected.jsonl
+python reproduce.py silvr \
+  --benchmark videomme_long \
+  --method deck \
+  --annotation hf://datasets/lmms-lab/Video-MME/videomme/test-00000-of-00001.parquet \
+  --caption-path /path/to/videomme_30s_captions \
+  --subtitle-path /path/to/videomme_asr_subtitles \
+  --answer-model Qwen/Qwen3-VL-8B-Instruct \
+  --embedding-model Qwen/Qwen3-Embedding-4B \
+  --embedding-cache data/embedding_cache/videomme \
+  --output-dir outputs/silvr/videomme_deck
 ```
 
-Use `config/m3_agent.yaml` when running the M3-Agent integration.
+For M3Bench, pass `--benchmark robot` or `--benchmark web` and use the converted JSON file as
+`--annotation`. Captions and ASR are already embedded in that JSON, so separate caption and
+subtitle paths are unnecessary.
 
-Generate answers through an OpenAI-compatible local endpoint:
+## Reproduce Baselines
+
+The same entry point exposes all main-table retrieval policies. Framework-specific defaults match
+the paper budgets: M3-Agent uses `min2/max5`, Adaptive-k `+2`, and Adaptive-RAG `A2/B4/C5`;
+SiLVR uses `min2/max8`, Adaptive-k `+5`, and Adaptive-RAG `A2/B7/C8`.
 
 ```bash
-deck answer \
-  --model Qwen/Qwen3-VL-8B-Instruct \
-  --base-url http://127.0.0.1:8000 \
-  --input outputs/deck-selected.jsonl \
-  --output outputs/deck-predictions.jsonl
+# Original M3-Agent thresholded top-2 control
+python reproduce.py m3-agent --benchmark robot --method original
+
+# Fixed budget
+python reproduce.py silvr ... --method fixed_topk --fixed-k 7
+
+# MMR ordering with a fixed budget (ablation)
+python reproduce.py silvr ... --method mmr_fixed_topk --fixed-k 7
+
+# Adaptive-k
+python reproduce.py silvr ... --method adaptivek
+
+# Adaptive-RAG with predictions from the official trained classifier
+python reproduce.py silvr ... --method adaptiverag \
+  --adaptiverag-labels /path/to/adaptiverag_predictions.json
 ```
 
-Evaluate VideoMME-Long:
-
-```bash
-deck evaluate \
-  --mode multiple_choice \
-  --input outputs/deck-predictions.jsonl \
-  --metrics outputs/metrics.json
-```
-
-Evaluate M3Bench with GPT-4o:
-
-```bash
-export OPENAI_API_KEY=<your-key>
-deck evaluate \
-  --mode judge \
-  --judge-model gpt-4o \
-  --input outputs/deck-predictions.jsonl \
-  --output outputs/deck-judged.jsonl \
-  --metrics outputs/metrics.json
-```
+Add `--dry-run` to any command to print the complete underlying framework command without loading
+a model. The standalone `deck` CLI remains available for integrating DEC-K with another memory
+system.
 
 ## Citation
 
@@ -139,7 +206,8 @@ deck evaluate \
 
 ## Acknowledgments
 
-DEC-K is evaluated with [M3-Agent](https://github.com/ByteDance-Seed/m3-agent) and
-[SiLVR](https://github.com/CeeZh/SILVR). Baselines use
+This repository includes modified source from M3-Agent under Apache-2.0 and SiLVR under MIT. Their
+original licenses and READMEs are preserved inside the corresponding framework directories.
+Adaptive baselines follow
 [Adaptive-k Retrieval](https://github.com/megagonlabs/adaptive-k-retrieval) and
 [Adaptive-RAG](https://github.com/starsuzi/Adaptive-RAG).

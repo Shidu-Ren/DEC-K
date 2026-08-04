@@ -1,0 +1,6 @@
+{
+  "gpt-4o": {
+    "api_key": "set OPENAI_API_KEY in the environment",
+    "qpm": 60
+  }
+}
